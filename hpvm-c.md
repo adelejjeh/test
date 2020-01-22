@@ -3,6 +3,7 @@
 ## Host API
 
 ```void __visc__init()```
+
 Used before all other HPVM calls to initialize the HPVM runtime.
 
 ```void __visc__cleanup()```
