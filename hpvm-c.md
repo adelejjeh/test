@@ -5,8 +5,7 @@
     void __visc__init()
 Used before all other HPVM calls to initialize the HPVM runtime.
 
-```void __visc__cleanup()```  
----
+<u>```void __visc__cleanup()```</u>  
 Used at the end of HPVM program to clean up all remaining runtime-created HPVM objects.
 
 ```void llvm_visc_track_mem(void* ptr, size_t sz)```  
