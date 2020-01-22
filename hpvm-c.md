@@ -2,11 +2,8 @@
 
 ## Host API
 
-    void __visc__init()  
+    void __visc__init()
 Used before all other HPVM calls to initialize the HPVM runtime.
-
-    void __visc__cleanup()
-Used at the end of HPVM program to clean up all remaining runtime-created HPVM objects.
 
 ```void __visc__cleanup()```  
 Used at the end of HPVM program to clean up all remaining runtime-created HPVM objects.
@@ -31,6 +28,28 @@ Push set of input data items, ```args```, (same as type included in launch) to s
 
 ```void* __visc__pop(void* G)```  
 Pop and return data produced from one execution of streaming DFG with handle ```G```.
+
+TABLE VERSION
+| |
+|-|
+|```void __visc__init()```  
+Used before all other HPVM calls to initialize the HPVM runtime.|
+|```void __visc__cleanup()```  
+Used at the end of HPVM program to clean up all remaining runtime-created HPVM objects.|
+|```void llvm_visc_track_mem(void* ptr, size_t sz)```  
+Insert memory starting at ```ptr``` of size ```sz``` in the memory tracker of HPVM runtime.|
+|```void llvm_visc_untrack_mem(void* ptr)```  
+Stop tracking the memory object identified by ```ptr```.|
+|```void llvm_visc_request_mem(void* ptr, size_t sz)```  
+If the memory object identified by ```ptr``` is not in host memory, copy it to host memory.|
+|```void* __visc__launch(unsigned isStream, void* rootGraph, void* args)```  
+Launches the execution of the dataflow graph with node function ```rootGraph```. ```args``` is a pointer to a packed struct, containing one field per argument of the RootGraph function, consecutively. For non-streaming DFGs with a non empty result type, ```args``` must contain an additional field of the type ```RootGraph.returnTy```, where the result of the graph will be returned. ```isStream``` chooses between a non streaming (0) or streaming (1) graph execution. Returns a handle to the executing graph.|
+|```void __visc__wait(void* G)```  
+Waits for completion of execution of the dataflow graph with handle ```G```.|
+|```void __visc__push(void* G, void* args)```  
+Push set of input data items, ```args```, (same as type included in launch) to streaming DFG with handle ```G```.|
+|```void* __visc__pop(void* G)```  
+Pop and return data produced from one execution of streaming DFG with handle ```G```.|
 
 ## Internal Node API
 
