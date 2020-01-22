@@ -34,21 +34,21 @@ A bind is always all-to-all.
 ## Host Code
 In an HPVM program, the host code is responsible for setting up, initiating the execution and blocking for completion of a DFG. The host can interact with the DFG to sustain a streaming computation by sending all data required for, and receiving all data produced by, one execution of the DFG. The list of actions that can be performed by the host is described below:
 
-- **Initialization and Cleanup**
+- **Initialization and Cleanup**:
 All HPVM operations must be enclosed by the HPVM initialization and cleanup. These operations perform initialization and cleanup of runtime constructs that provide the runtime support for HPVM.
-- **Track Memory**
+- **Track Memory**:
 Memory objects that are passed to dataflow graphs need to be managed by the HPVM runtime. The HPVM runtime includes a memory tracker for recording the location of HPVM-managed memory objects. Track memory starts tracking specified memory object.
-- **Untrack Memory**
+- **Untrack Memory**:
 Stop tracking specified memory object.
-- **Request Memory**
+- **Request Memory**:
 If the specified memory object is not present in host memory, copy it to host memory.
-- **Launch**
+- **Launch**:
 The host code initiates execution of specified DFG, either streaming or non streaming, and passes initial data. All data for one graph execution must be provided.
-- **Wait**
+- **Wait**:
 The host code blocks for completion of specified DFG.
-- **Push**
+- **Push**:
 Push a set of data required for one graph execution to the specified DFG. The DFG must have been launched using a streaming launch operation. This is a blocking operation.
-- **Pop**
+- **Pop**:
 Read data produced from one execution of the specified DFG. The DFG must have been launched using a streaming launch operation. This is a blocking operation.
 
 # HPVM Implementation
