@@ -2,10 +2,10 @@
 
 ## Host API
 
-```void __visc__init()```  
+    void __visc__init()  
 Used before all other HPVM calls to initialize the HPVM runtime.
 
-```void __visc__cleanup()```  
+    void __visc__cleanup()
 Used at the end of HPVM program to clean up all remaining runtime-created HPVM objects.
 
 ```void __visc__cleanup()```  
