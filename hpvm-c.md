@@ -29,9 +29,9 @@ Push set of input data items, ```args```, (same as type included in launch) to s
 ```void* __visc__pop(void* G)```  
 Pop and return data produced from one execution of streaming DFG with handle ```G```. 
 
-| Header test |
-| --- |
-|```void __visc__init()```|
+| |
+| - |
+|void __visc__init()|
 |Used before all other HPVM calls to initialize the HPVM runtime.|
 |```void __visc__cleanup()```|
 |Used at the end of HPVM program to clean up all remaining runtime-created HPVM objects.|
