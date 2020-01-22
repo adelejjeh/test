@@ -31,7 +31,7 @@ Pop and return data produced from one execution of streaming DFG with handle ```
 
 | |
 | - |
-|```void __visc__init()```<br>Used before all other HPVM calls to initialize the HPVM runtime.|
+|```void __visc__init()```<br style="line-height:10px">Used before all other HPVM calls to initialize the HPVM runtime.|
 |```void __visc__cleanup()```|
 |Used at the end of HPVM program to clean up all remaining runtime-created HPVM objects.|
 |```void llvm_visc_track_mem(void* ptr, size_t sz)```|
