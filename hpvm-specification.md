@@ -1,5 +1,3 @@
-This document includes the HPVM IR specification.
-
 # HPVM Abstraction
 An HPVM program is a combination of host code plus a set of one or more distinct dataflow graphs. Each dataflow graph (DFG) is a hierarchical graph with side effects. Nodes represent units of execution, and edges between nodes describe the explicit data transfer requirements. A node can begin execution once a data item becomes available on every one of its input edges. Repeated transfer of data items between nodes (if more inputs are provided) yields a pipelined execution of different nodes in the graph. The execution of a DFG is initiated and terminated by host code that launches the graph. Nodes may access globally shared memory through load and store instructions (side-effects).
 
@@ -55,7 +53,7 @@ Read data produced from one execution of the specified DFG. The DFG must have be
 
 # HPVM Implementation
 
-The following document describes the implementation of HPVM on top of LLVM IR.
+This section describes the implementation of HPVM on top of LLVM IR.
 
 We use intrinsic functions to implement the HPVM IR. iN is the N-bit integer type in LLVM.
 
@@ -72,108 +70,108 @@ Pointer arguments of node functions are required to be annotated with attributes
 The intrinsics for describing graphs can only be used by internal nodes. Also, internal nodes are only allowed to have these intrinsics as part of their node function, with the exception of a return statement of the appropriate type, in order to return the result of the outgoing dataflow edges.
 
 
-```i8* llvm.hpvm.createNode(i8* F)```
+```i8* llvm.hpvm.createNode(i8* F)```  
 Create a static dataflow node with no dynamic instances executing node function ```F```. Return a handle to the created node.
 
-```i8* llvm.hpvm.createNode1D(i8* F, i64 n1)```
+```i8* llvm.hpvm.createNode1D(i8* F, i64 n1)```  
 Create a static dataflow node with ```n1``` dynamic instances executing node function ```F```. Return a handle to the created node.
 
-```i8* llvm.hpvm.createNode2D(i8* F, i64 n1, i64 n2)```
+```i8* llvm.hpvm.createNode2D(i8* F, i64 n1, i64 n2)```  
 Create a static dataflow node replicated in two dimensions, with ```n1``` and ```n2``` dynamic instances in each dimension respectively, executing node function ```F```. Return a handle to the created node.
 
-```i8* llvm.hpvm.createNode3D(i8* F, i64 n1, i64 n2, i64 n3)```
+```i8* llvm.hpvm.createNode3D(i8* F, i64 n1, i64 n2, i64 n3)```  
 Create a static dataflow node replicated in three dimensions, with ```n1```, ```n2``` and ```n3``` dynamic instances in each dimension respectively, executing node function ```F```. Return a handle to the created node.
 
-```i8* llvm.hpvm.createEdge(i8* Src, i8* Dst, i1 ReplType, i32 sp, i32 dp, i1 isStream)```
+```i8* llvm.hpvm.createEdge(i8* Src, i8* Dst, i1 ReplType, i32 sp, i32 dp, i1 isStream)```  
 Create edge from output ```sp``` of node ```Src``` to input ```dp``` of node ```Dst```. ```ReplType``` chooses between a 1-1 or all-to-all edge. ```isStream``` chooses a streaming (1) or non streaming (0) edge. Return a handle to the created edge.
 
-```void llvm.hpvm.bind.input(i8* N, i32 ip, i32 ic, i1 isStream)```
+```void llvm.hpvm.bind.input(i8* N, i32 ip, i32 ic, i1 isStream)```  
 Bind input ```ip``` of current node to input ```ic``` of child node ```N```. ```isStream``` chooses a streaming (1) or non streaming (0) bind.
 
-```void llvm.hpvm.bind.output(i8* N, i32 oc, i32 op, i1 isStream)```
+```void llvm.hpvm.bind.output(i8* N, i32 oc, i32 op, i1 isStream)```  
 Bind output ```oc``` of child node ```N``` to output ```op``` of current node. ```isStream``` chooses a streaming (1) or non streaming (0) bind.
 
 ## Intrinsics for Querying Graphs
 
 The following intrinsics are used to query the structure of the DFG. They can only be used by leaf nodes.
 
-```i8* llvm.hpvm.getNode()```
+```i8* llvm.hpvm.getNode()```  
 Return a handle to the current dataflow node.
 
-```i8* llvm.hpvm.getParentNode(i8* N)```
+```i8* llvm.hpvm.getParentNode(i8* N)```  
 Return a handle to the parent in the hierarchy of node ```N```.
 
-```i32 llvm.visc.getNumDims(i8* N)```
+```i32 llvm.visc.getNumDims(i8* N)```  
 Get the number of dimensions of node ```N```.
 
-```i64 llvm.hpvm.getNodeInstanceID.{x,y,z}(i8* N)```
+```i64 llvm.hpvm.getNodeInstanceID.{x,y,z}(i8* N)```  
 Get index of current dynamic node instance of node ```N``` in dimension x, y or z respectively. The dimension must be one of the dimensions in which the node is replicated.
 
-```i64 llvm.hpvm.getNumNodeInstances.{x,y,z}(i8* N)```
+```i64 llvm.hpvm.getNumNodeInstances.{x,y,z}(i8* N)```  
 Get number of dynamic instances of node ```N``` in dimension x, y or z respectively. The dimension must be one of the dimensions in which the node is replicated.
 
 ## Intrinsics for Memory Allocation and Synchronization
 
 The following intrinsics are used for memory allocation and synchronization. They can only be used by leaf nodes.
-```i8* llvm.hpvm.malloc(i64 nBytes)```
+```i8* llvm.hpvm.malloc(i64 nBytes)```  
 Allocate a block of memory of size ```nBytes``` and return pointer to it. The allocated object can be shared by all nodes, although the pointer returned must somehow be communicated explicitly for use by other nodes.
 
-```i32 llvm.hpvm.atomic.add(i8* m, i32 v)```
+```i32 llvm.hpvm.atomic.add(i8* m, i32 v)```  
 Atomically computes the bitwise ADD of ```v``` and the value stored at memory location ```[m]```. Returns the value previously stored at ```[m]```.
 
-```i32 llvm.hpvm.atomic.sub(i8* m, i32 v)```
+```i32 llvm.hpvm.atomic.sub(i8* m, i32 v)```  
 Atomically computes the bitwise SUB of ```v``` and the value stored at memory location ```[m]```. Returns the value previously stored at ```[m]```.
 
-```i32 llvm.hpvm.atomic.min(i8* m, i32 v)```
+```i32 llvm.hpvm.atomic.min(i8* m, i32 v)```  
 Atomically computes the bitwise MIN of ```v``` and the value stored at memory location ```[m]```. Returns the value previously stored at ```[m]```.
 
-```i32 llvm.hpvm.atomic.max(i8* m, i32 v)```
+```i32 llvm.hpvm.atomic.max(i8* m, i32 v)```  
 Atomically computes the bitwise MAX of ```v``` and the value stored at memory location ```[m]```. Returns the value previously stored at ```[m]```.
 
-```i32 llvm.hpvm.atomic.xchg(i8* m, i32 v)```
+```i32 llvm.hpvm.atomic.xchg(i8* m, i32 v)```  
 Atomically computes the bitwise XCHG of ```v``` and the value stored at memory location ```[m]```. Returns the value previously stored at ```[m]```.
 
-```i32 llvm.hpvm.atomic.and(i8* m, i32 v)```
+```i32 llvm.hpvm.atomic.and(i8* m, i32 v)```  
 Atomically computes the bitwise AND of ```v``` and the value stored at memory location ```[m]```. Returns the value previously stored at ```[m]```.
 
-```i32 llvm.hpvm.atomic.or(i8* m, i32 v)```
+```i32 llvm.hpvm.atomic.or(i8* m, i32 v)```  
 Atomically computes the bitwise XOR of ```v``` and the value stored at memory location ```[m]```. Returns the value previously stored at ```[m]```.
 
-```i32 llvm.hpvm.atomic.xor(i8* m, i32 v)```
+```i32 llvm.hpvm.atomic.xor(i8* m, i32 v)```  
 Atomically computes the bitwise XOR of ```v``` and the value stored at memory location ```[m]```. Returns the value previously stored at ```[m]```.
 
-```void llvm.hpvm.barrier()```
+```void llvm.hpvm.barrier()```  
 Local synchronization barrier across dynamic instances of current leaf node.
 
 ## Intrinsics for Graph Interaction
 
 The following intrinsics are for graph initialization/termination and interaction with the host code, and can be used only by the host code.
 
-```void llvm.hpvm.init()```
+```void llvm.hpvm.init()```  
 Initialization of HPVM runtime.
 
-```void llvm.hpvm.cleanup()```
+```void llvm.hpvm.cleanup()```  
 Cleanup of HPVM runtime created objects.
 
-```void llvm.hpvm.trackMemory(i8* ptr, i64 sz)```
+```void llvm.hpvm.trackMemory(i8* ptr, i64 sz)```  
 Insert memory starting at ```ptr``` of size ```sz``` in the memory tracker. ```ptr``` becomes the key for identifying this memory object. As soon as a memory object is inserted in the memory tracker it starts being tracked, and can be passed as a data item to a DFG.
 
-```void llvm.hpvm.untrackMemory(i8* ptr)```
+```void llvm.hpvm.untrackMemory(i8* ptr)```  
 Stop tracking memory object with key ```ptr```, and remove it from memory tracker.
 
-```void llvm.hpvm.requestMemory(i8* ptr, i64 sz)```
+```void llvm.hpvm.requestMemory(i8* ptr, i64 sz)```  
 If memory object with key ```ptr``` is not located in host memory, copy it to host memory.
 
-```i8* llvm.hpvm.launch(i8* RootGraph, i8* Args, i1 isStream)```
+```i8* llvm.hpvm.launch(i8* RootGraph, i8* Args, i1 isStream)```  
 Launch the execution of DFG with node function ```RootGraph```. ```Args``` is a pointer to packed struct, containing one field per argument of the ```RootGraph``` function, consecutively. For non-streaming DFGs with a non empty result type, ```Args``` must contain an additional field of the type ```RootGraph.returnTy```, where the result of the graph will be returned. ```isStream``` chooses between a non streaming (0) or streaming (1) graph execution. Return a handle to the invoked DFG.
 
-```void llvm.hpvm.wait(i8* GraphID)```
+```void llvm.hpvm.wait(i8* GraphID)```  
 Wait for completion of execution of DFG with handle ```GraphID```.
 
-```void llvm.hpvm.push(i8* GraphID, i8* args)```
+```void llvm.hpvm.push(i8* GraphID, i8* args)```  
 Push set of input data ```args``` (same as type included in launch) to streaming DFG with handle ```GraphID```.
 
-```i8* llvm.hpvm.pop(i8* GraphID)```
+```i8* llvm.hpvm.pop(i8* GraphID)```  
 Pop  and return data from streaming DFG with handle ```GraphID```.
 
 ## Implementation Limitations
