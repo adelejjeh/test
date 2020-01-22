@@ -27,9 +27,8 @@ Waits for completion of execution of the dataflow graph with handle ```G```.
 Push set of input data items, ```args```, (same as type included in launch) to streaming DFG with handle ```G```.
 
 ```void* __visc__pop(void* G)```  
-Pop and return data produced from one execution of streaming DFG with handle ```G```.
+Pop and return data produced from one execution of streaming DFG with handle ```G```. 
 
-TABLE VERSION
 | Header test |
 | --- |
 |```void __visc__init()```|
